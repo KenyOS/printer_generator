@@ -116,7 +116,7 @@
         }
 
 var qrcode = new QRCode("qrcode", {
-    text: "https://techmeter.com.br",
+    text: "https://airtable.com/shresALEhI6Vf9MgV" + "?prefill_ID=" + getQueryVariable("idprocesso");,
     width: 128,
     height: 128,
     colorDark : "#000000",
@@ -129,11 +129,6 @@ function makeCode () {
   var clienteText = document.getElementById("cliente");    
   var elText = document.getElementById("qr");
   
-  if (!elText.value) {
-    alert("Input a text");
-    elText.focus();
-    return;
-  }
   
   qrcode.makeCode(elText.value);
 }

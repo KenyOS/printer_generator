@@ -4,7 +4,7 @@
 <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
 <script src="https://code.jquery.com/jquery-3.6.0.slim.min.js" integrity="sha256-u7e5khyithlIdTpu22PHhENmPcRdFiHRjhAuHcs05RI=" crossorigin="anonymous"></script> 
 <meta charset="utf-8" /> 
-<title>Printable pfSense Voucher Generator</title>
+<title>Gerador de Etiqueta</title>
 <style type="text/css">
     @page {
             size: A4 landscape;
@@ -46,8 +46,12 @@
     }
 }
 #qrcode {
-
+    right: 40%;
 }
+label {
+  display: block;
+  font-weight: bold;
+  }
 </style>
 </head>
 
@@ -56,10 +60,20 @@
 <h1>Gerador de Etiqueta</h1>
 <p><strong>Usar no Chrome, Edge, chromium</strong> resultado sera melhor da impressão</p>
 
+<h2>Gerador de Volumes de Caixas:</h2>
+<label for="startingValue">Começo do Volume :</label>
+<input type="text" id="startingValue" />
+<label for="endingValue">Fim do Volume :</label>
+<input type="text" id="endingValue" />
+<button onclick="runCounter()">Gerar</button>
+
+<div class="content-pane">
+  <div id="progression-pane">
+    </div>
+  </div>
+
 <p>Nome do Cliente </p>
 <input id="cliente" type="text" placeholder="nome do cliente" style="width:40%" /><button type="button" onclick="getInputValue();">Salvar</button><br />
-<p>ID do Processo de Exped. </p>
-<input id="text" type="text" value="https://hogangnono.com" style="width:40%" /><br />
 
 
 <form id="form">
@@ -73,13 +87,13 @@
 
 </div>
 <div id="tpl">
-       <h4>Cliente:</h4><h1 id="hcliente"> <img src="https://github.com/KenyOS/pfsense-captive-portal/raw/master/captiveportal-logo.png" style="width: 140px;height: 60px;"/></h1><br>
-       <table>
-        <tr><th>SSID:</th><td>Techmeter</td></tr>
-        <tr><th>Volume:</th><td id="code">FIXME</td></tr>
-       </table>
+        <img src="https://github.com/KenyOS/pfsense-captive-portal/raw/master/captiveportal-logo.png" style=""/><p id="code" style="margin-left: 90%;"></p>
+       <h4>Cliente:</h4><h1 id="hcliente"></h1><br>
+       
        <h4>NF:</h4>
        <h4 id="qr"></h4>
+       <br />
+       <br />
        <br />
        <br />
       
@@ -92,6 +106,46 @@
 </table>
 
 <script>
+/*****
+ * When the "show me!" button gets clicked, 
+ *   there's a few things we do: get the values of
+ *   the inputs, loop from the starting value to 
+ *   the ending value by a given increment (default
+ *   increment of two), and output the result to a div.
+ *****/
+runCounter = function() {
+  // This is the location we'll put the result
+  var contentPane = document.getElementById("progression-pane");
+  // This will be the output string
+  var contentString = "";
+  
+  // retrieve the values given AND MAKE THEM
+  //  INTEGERS! We could do floats, but it's 
+  //  darn important to make them numbers.
+  var startingValue = parseInt(document.getElementById("startingValue").value);
+  var endingValue = parseInt(document.getElementById("endingValue").value);
+  
+
+  if (startingValue && endingValue) {
+    // So long as we actually HAVE a staring and ending value...
+
+    contentString += "<p>Entradas gerado para " + endingValue + " Caixas:</p>";
+    contentString += "<p>Copiar os valores gerados e Colar no campo de Texto Abaixo</p>";
+    for (i = startingValue; i <= endingValue; i += 1) {
+      // If we are here, we have all three: start, end and increment
+      contentString +=  i + "/" + endingValue + "<br/>";
+    }
+    contentString += "";
+    // We've finished formatting the string, 
+    //  let's output it to the proper div.
+    //  Note that I'm using innerHTML, 
+    //   document.writeln is considered bad.
+    
+    contentPane.innerHTML = contentString;
+  }
+
+}
+
     function getQueryVariable(variable)
 {
        var query = window.location.search.substring(1);
@@ -111,12 +165,12 @@
         document.getElementById("hcliente").innerHTML = inputVal;
 
         //Display custom QRCode
-        document.getElementById("qr").innerHTML = getQueryVariable("idprocesso");
+        //document.getElementById("qr").innerHTML = getQueryVariable("idprocesso");
 
         }
-
+var idprocesso = getQueryVariable("idprocesso");
 var qrcode = new QRCode("qrcode", {
-    text: "https://airtable.com/shresALEhI6Vf9MgV" + "?prefill_ID=" + getQueryVariable("idprocesso");,
+    text: "https://airtable.com/shresALEhI6Vf9MgV" + "?prefill_ID=" + idprocesso,
     width: 128,
     height: 128,
     colorDark : "#000000",
@@ -129,6 +183,11 @@ function makeCode () {
   var clienteText = document.getElementById("cliente");    
   var elText = document.getElementById("qr");
   
+  if (!elText.value) {
+    
+    elText.focus();
+    return;
+  }
   
   qrcode.makeCode(elText.value);
 }

@@ -1,0 +1,196 @@
+<!DOCTYPE html>
+<html>
+<head>
+<script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
+<script src="https://code.jquery.com/jquery-3.6.0.slim.min.js" integrity="sha256-u7e5khyithlIdTpu22PHhENmPcRdFiHRjhAuHcs05RI=" crossorigin="anonymous"></script> 
+<meta charset="utf-8" /> 
+<title>Printable pfSense Voucher Generator</title>
+<style type="text/css">
+    @page {
+            size: A4 landscape;
+    }
+    body {
+            font-family: verdana, arial, sans-serif ;
+            font-size: 12px ;
+            }
+    #maintable {
+        border-spacing: 15px;
+        display: none;
+    }
+    td.voucher  {
+            border-top: 1px dotted #999999 ;
+            border-bottom: 1px dotted #999999 ;
+            border-left: 1px dotted  #999999;
+            border-right: 1px dotted  #999999;
+            padding: 20px 20px 10px 10px;
+            text-align: left ;
+            background-position: right top;
+            background-size: 175px 60px;
+            background-repeat: no-repeat;
+            background-origin: content-box;
+    }
+    tr.voucher {
+            page-break-inside: avoid;
+       }
+    #tpl {
+        display: none;
+    }
+@media print {
+    #generator {
+        display: none;
+    }
+    @page {
+            size: A4 landscape;
+            background-color: lightgreen;
+
+    }
+}
+#qrcode {
+  width:160px;
+  height:160px;
+  margin-top:15px;
+}
+</style>
+</head>
+
+<body>
+<div id="generator">
+<h1>Printable pfSense Voucher Generator</h1>
+<p><strong>Use in Chrome, not Firefox!!!1!!!11</strong> -- the print function is much more handy</p>
+<h2>How does it work?</h2>
+<ul>
+<li>Get a new voucher roll: pfsense->Services->Edit->Vouchers and download the .csv-Datei
+<li>Paste the coucher-codes without the  #-headline into the text area. But you may leave the " quotes and spaces around the codes.
+<li>Click Generate
+<li>Print it right from the browser in <strong>A4 Landscape</strong>, using <strong>no header/footer</strong> but <strong>background images</strong>. Everything unnecessary will be automagically hidden in the print.
+</ul>
+
+<input id="cliente" type="text" placeholder="nome do cliente" style="width:80%" /><br />
+<input id="text" type="text" value="https://hogangnono.com" style="width:80%" /><br />
+
+
+<form id="form">
+<textarea id="vouchers" rows="40">
+
+
+</textarea>
+<button type="button" id="button">Gerar Etiqueta</button>
+<button type="button" id="print" disabled>Imprimir</button>
+</form>
+<p>
+    The stock picture is <a href="https://www.freepik.com/free-vector/nice-collection-of-real-estate-logos_1978041.htm">Designed by Freepik</a>
+</p>
+
+</div>
+<div id="tpl">
+       <h1><script type="text/javascript">$clienteText.value</script> <img src="https://github.com/KenyOS/pfsense-captive-portal/raw/master/captiveportal-logo.png" style="width: 140px;height: 60px;"/></h1><br>
+       <table>
+        <tr><th>SSID:</th><td>Techmeter</td></tr>
+        <tr><th>Volume:</th><td id="code">FIXME</td></tr>
+       </table>
+       <p>
+       Esse Voucher &eacute; v&aacute;lido por <strong>1 dia</strong> ap&oacute;s o seu uso inicial.<br /> Conecte ao Wifi e tente abrir qualquer website para inserir o voucher no campo &quot;Vouchers&quot; em nosso portal Techmeter. <br /> Qualquer d&uacute;vida fique &agrave; vontade para contatar o Administrador.
+       </p>
+       <div id="qrcode"></div>
+   </div>
+
+<table id="maintable">
+<tbody id=table>
+</tbody>
+</table>
+
+<script>
+
+
+var qrcode = new QRCode("qrcode");
+
+function makeCode () {
+  var clienteText = document.getElementById("cliente");    
+  var elText = document.getElementById("text");
+  
+  if (!elText.value) {
+    alert("Input a text");
+    elText.focus();
+    return;
+  }
+  
+  qrcode.makeCode(elText.value);
+}
+
+makeCode();
+
+$("#text").
+  on("blur", function () {
+    makeCode();
+  }).
+  on("keydown", function (e) {
+    if (e.keyCode == 13) {
+      makeCode();
+    }
+  });
+
+
+document.getElementById("print").addEventListener('click',printEm);
+document.getElementById("button").addEventListener('click',buildEm);
+document.getElementById("vouchers").addEventListener('focus',clearEm);
+
+function clearEm() {
+    var vouchers=document.getElementById("vouchers");
+    if(!vouchers.value.search("\" voucher1")) {
+        vouchers.value="";
+    }
+}
+
+function printEm() {
+    window.print();
+}
+
+function buildEm() {
+    var vouchers=document.getElementById("vouchers").value.trim().split('\n');
+
+    if (vouchers.length%2) {
+        alert("Deve ter no minimo duas entrada no bloco.");
+        return 0;
+    }
+
+    var tpl=document.getElementById("tpl");
+    var code=document.getElementById("code");
+    var table=document.getElementById("table");
+    var tr;
+
+
+    document.getElementById("maintable").style.display="none";
+    document.getElementById("table").innerHTML="";
+
+    for(var i=0;i<vouchers.length;i++) {
+        if(!(i%2)) {
+            tr=document.createElement("tr");
+            tr.className="voucher";
+        }
+
+        // pfsense prints the voucher codes as something like
+        //   " aaaaaaaaaa"
+        // into the csv -> account for this!
+        code.innerHTML=vouchers[i].replace(/"/g,'').trim();
+
+        var foo = tpl.cloneNode(true);
+        foo.style.display="block";
+        foo.removeAttribute("id");
+        var td=document.createElement("td");
+        td.className="voucher";
+        td.appendChild(foo);
+        tr.appendChild(td);
+
+        if((i%2)) {
+            table.appendChild(tr);
+        }
+
+    }
+    document.getElementById("maintable").style.display="block";
+    document.getElementById("print").disabled = false;
+}
+
+</script>
+
+</body>
+</html>

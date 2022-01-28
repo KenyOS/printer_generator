@@ -60,6 +60,7 @@
 <input id="cliente" type="text" placeholder="nome do cliente" style="width:40%" /><button type="button" onclick="getInputValue();">Salvar</button><br />
 <p>ID do Processo de Exped. </p>
 <input id="text" type="text" value="https://hogangnono.com" style="width:40%" /><br />
+<button type="button" onclick="getQueryVariable(id);">Salvar</button>
 
 
 <form id="form">
@@ -70,9 +71,6 @@
 <button type="button" id="button">Gerar Etiqueta</button>
 <button type="button" id="print" disabled>Imprimir</button>
 </form>
-<p>
-    The stock picture is <a href="https://www.freepik.com/free-vector/nice-collection-of-real-estate-logos_1978041.htm">Designed by Freepik</a>
-</p>
 
 </div>
 <div id="tpl">
@@ -101,6 +99,7 @@
        for (var i=0;i<vars.length;i++) {
                var pair = vars[i].split("=");
                if(pair[0] == variable){return pair[1];}
+        document.getElementById("hcliente").innerHTML = vars;
        }
        return(false);
 }
@@ -112,7 +111,6 @@
         //Display Cliente Name on H1
         document.getElementById("hcliente").innerHTML = inputVal;
 
-        alert(getQueryVariable("id"));
 
         }
 

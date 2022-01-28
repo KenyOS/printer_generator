@@ -110,7 +110,8 @@
         //Display Cliente Name on H1
         document.getElementById("hcliente").innerHTML = inputVal;
 
-        document.getElementById("qr").innerHTML = getQueryVariable("text");
+        //Display custom QRCode
+        document.getElementById("qr").innerHTML = getQueryVariable("idprocesso");
 
         }
 
@@ -126,7 +127,7 @@ var qrcode = new QRCode("qrcode", {
 
 function makeCode () {
   var clienteText = document.getElementById("cliente");    
-  var elText = document.getElementById("text");
+  var elText = document.getElementById("qr");
   
   if (!elText.value) {
     alert("Input a text");

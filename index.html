@@ -60,7 +60,6 @@
 <input id="cliente" type="text" placeholder="nome do cliente" style="width:40%" /><button type="button" onclick="getInputValue();">Salvar</button><br />
 <p>ID do Processo de Exped. </p>
 <input id="text" type="text" value="https://hogangnono.com" style="width:40%" /><br />
-<button type="button" onclick="getQueryVariable(text);">Salvar</button>
 
 
 <form id="form">
@@ -80,6 +79,7 @@
         <tr><th>Volume:</th><td id="code">FIXME</td></tr>
        </table>
        <h4>NF:</h4>
+       <h4 id="qr">Cliente:</h4>
        <br />
        <br />
       
@@ -99,7 +99,6 @@
        for (var i=0;i<vars.length;i++) {
                var pair = vars[i].split("=");
                if(pair[0] == variable){return pair[1];}
-        document.getElementById("hcliente").innerHTML = vars;
        }
        return(false);
 }
@@ -111,6 +110,7 @@
         //Display Cliente Name on H1
         document.getElementById("hcliente").innerHTML = inputVal;
 
+        document.getElementById("qr").innerHTML = getQueryVariable("text");
 
         }
 

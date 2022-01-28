@@ -46,27 +46,20 @@
     }
 }
 #qrcode {
-  width:160px;
-  height:160px;
-  margin-top:15px;
+
 }
 </style>
 </head>
 
 <body>
 <div id="generator">
-<h1>Printable pfSense Voucher Generator</h1>
-<p><strong>Use in Chrome, not Firefox!!!1!!!11</strong> -- the print function is much more handy</p>
-<h2>How does it work?</h2>
-<ul>
-<li>Get a new voucher roll: pfsense->Services->Edit->Vouchers and download the .csv-Datei
-<li>Paste the coucher-codes without the  #-headline into the text area. But you may leave the " quotes and spaces around the codes.
-<li>Click Generate
-<li>Print it right from the browser in <strong>A4 Landscape</strong>, using <strong>no header/footer</strong> but <strong>background images</strong>. Everything unnecessary will be automagically hidden in the print.
-</ul>
+<h1>Gerador de Etiqueta</h1>
+<p><strong>Usar no Chrome, Edge, chromium</strong> resultado sera melhor da impressão</p>
 
-<input id="cliente" type="text" placeholder="nome do cliente" style="width:80%" /><br />
-<input id="text" type="text" value="https://hogangnono.com" style="width:80%" /><br />
+<p>Nome do Cliente </p>
+<input id="cliente" type="text" placeholder="nome do cliente" style="width:40%" /><button type="button" onclick="getInputValue();">Salvar</button><br />
+<p>ID do Processo de Exped. </p>
+<input id="text" type="text" value="https://hogangnono.com" style="width:40%" /><br />
 
 
 <form id="form">
@@ -83,14 +76,15 @@
 
 </div>
 <div id="tpl">
-       <h1><script type="text/javascript">$clienteText.value</script> <img src="https://github.com/KenyOS/pfsense-captive-portal/raw/master/captiveportal-logo.png" style="width: 140px;height: 60px;"/></h1><br>
+       <h4>Cliente:</h4><h1 id="hcliente"> <img src="https://github.com/KenyOS/pfsense-captive-portal/raw/master/captiveportal-logo.png" style="width: 140px;height: 60px;"/></h1><br>
        <table>
         <tr><th>SSID:</th><td>Techmeter</td></tr>
         <tr><th>Volume:</th><td id="code">FIXME</td></tr>
        </table>
-       <p>
-       Esse Voucher &eacute; v&aacute;lido por <strong>1 dia</strong> ap&oacute;s o seu uso inicial.<br /> Conecte ao Wifi e tente abrir qualquer website para inserir o voucher no campo &quot;Vouchers&quot; em nosso portal Techmeter. <br /> Qualquer d&uacute;vida fique &agrave; vontade para contatar o Administrador.
-       </p>
+       <h4>NF:</h4>
+       <br />
+       <br />
+      
        <div id="qrcode"></div>
    </div>
 
@@ -100,9 +94,24 @@
 </table>
 
 <script>
+        function getInputValue(){
+            // Selecting the input element and get its value 
+            var inputVal = document.getElementById("cliente").value;
 
+        //Display Cliente Name on H1
+        document.getElementById("hcliente").innerHTML = inputVal;
 
-var qrcode = new QRCode("qrcode");
+        }
+
+var qrcode = new QRCode("qrcode", {
+    text: "https://techmeter.com.br",
+    width: 128,
+    height: 128,
+    colorDark : "#000000",
+    colorLight : "#ffffff",
+    correctLevel : QRCode.CorrectLevel.H
+
+});
 
 function makeCode () {
   var clienteText = document.getElementById("cliente");    
